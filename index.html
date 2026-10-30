@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101114" />
+    <title>WaveQueue | Stream song requests</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="WaveQueue home">
+          <span class="brand-mark"><span></span><span></span><span></span></span>
+          <span>WAVE<span class="brand-accent">QUEUE</span></span>
+        </a>
+        <div class="live-state"><span class="status-dot"></span><span>LIVE NOW</span><strong>DJ NIA</strong></div>
+        <div class="top-actions">
+          <button class="icon-button" type="button" title="Open notifications" aria-label="Open notifications"><span class="notification-dot"></span>◎</button>
+          <button class="avatar" type="button" title="Open profile" aria-label="Open profile">N</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="intro-row">
+          <div>
+            <p class="eyebrow">STREAM CONTROL / 02</p>
+            <h1>Keep the room moving.</h1>
+            <p class="intro-copy">A clean request queue for your community, delivered straight to the music channel.</p>
+          </div>
+          <div class="channel-chip"><span class="hash">#</span><span><small>REQUESTS GO TO</small>music-requests</span><i></i></div>
+        </section>
+
+        <section class="dashboard-grid">
+          <aside class="panel request-panel">
+            <div class="panel-heading">
+              <div><p class="eyebrow">01 / ADD A TRACK</p><h2>Make a request</h2></div>
+              <span class="step-number">01</span>
+            </div>
+            <form id="request-form">
+              <label for="requester-input">Enter your name</label>
+              <div class="search-field"><span class="search-icon">@</span><input id="requester-input" type="text" placeholder="Your name" autocomplete="nickname" maxlength="32" required /></div>
+              <label for="song-input">Enter a song title and artist</label>
+              <div class="search-field"><span class="search-icon">⌕</span><input id="song-input" type="text" placeholder="Song title - Artist" autocomplete="off" required /><button type="submit" aria-label="Add song">+</button></div>
+            </form>
+          </aside>
+
+          <section class="panel queue-panel">
+            <div class="panel-heading queue-heading">
+              <div><p class="eyebrow">02 / THE LINEUP</p><h2>Up next <span id="queue-count">00</span></h2></div>
+              <div class="queue-tools"><span class="queue-live"><i></i> accepting requests</span><button type="button" class="filter-button" id="filter-button">ALL <span>⌄</span></button></div>
+            </div>
+            <div class="queue-list" id="queue-list">
+            </div>
+            <div class="queue-footer"><span><b id="runtime">00:00</b> total runtime</span><button class="clear-button" id="clear-button" type="button">CLEAR QUEUE</button></div>
+          </section>
+
+          <aside class="panel discord-panel">
+            <div class="panel-heading"><div><p class="eyebrow">03 / DELIVERY</p><h2>Discord bridge</h2></div><span class="step-number">03</span></div>
+            <div class="discord-status"><span class="discord-logo">◌</span><div><strong>WaveQueue Bot</strong><span>Connected to your server</span></div><i class="connected-dot"></i></div>
+            <div class="server-row"><span class="server-icon">W</span><div><span class="muted-label">SERVER</span><strong>WAVES AFTER DARK</strong></div><span class="chevron">⌄</span></div>
+            <div class="server-row"><span class="channel-icon">#</span><div><span class="muted-label">CHANNEL</span><strong>music-requests</strong></div><button class="edit-link" type="button">EDIT</button></div>
+            <div class="delivery-preview"><span class="preview-label">NEXT MESSAGE PREVIEW</span><div class="discord-message"><span class="bot-avatar">W</span><div><strong>WaveQueue <small>BOT</small></strong><p>New request from <b>@milo_tv</b></p><p class="message-track">Digital Love <span>— Daft Punk</span></p></div></div></div>
+            <p class="delivery-note"><span>✓</span> Requests post automatically when added</p>
+          </aside>
+        </section>
+      </main>
+      <footer><span>WAVEQUEUE / BUILT FOR THE AFTER HOURS</span><span class="footer-right"><span class="mini-dot"></span> ALL SYSTEMS OPERATIONAL &nbsp;&nbsp; v1.4.0</span></footer>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
