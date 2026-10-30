@@ -3,7 +3,6 @@ const requesterInput = document.querySelector('#requester-input');
 const input = document.querySelector('#song-input');
 const queue = document.querySelector('#queue-list');
 const queueCount = document.querySelector('#queue-count');
-const runtime = document.querySelector('#runtime');
 const toast = document.querySelector('#toast');
 let toastTimer;
 let queueItems = [];
@@ -17,11 +16,6 @@ function showToast(message) {
   toast.classList.add('visible');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('visible'), 2600);
-}
-
-function formatRuntime(seconds) {
-  const minutes = Math.floor(seconds / 60);
-  return `${String(minutes).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
 function parseSongRequest(value) {
@@ -41,14 +35,8 @@ function escapeHtml(value) {
   }[character]));
 }
 
-function durationInSeconds(duration) {
-  const [minutes, seconds] = duration.split(':').map(Number);
-  return (minutes * 60) + seconds;
-}
-
 function updateQueueSummary() {
   queueCount.textContent = String(queueItems.length).padStart(2, '0');
-  runtime.textContent = formatRuntime(queueItems.reduce((total, song) => total + durationInSeconds(song.duration), 0));
 }
 
 function renderSong(song) {
@@ -56,7 +44,7 @@ function renderSong(song) {
   const artClass = palette[queueItems.indexOf(song) % palette.length];
   item.className = 'queue-item';
   item.dataset.requester = song.requester;
-  item.innerHTML = `<span class="drag-handle">⁙</span><span class="track-art ${artClass}">${escapeHtml(song.artist.slice(0, 2).toUpperCase())}</span><div class="track-info"><strong>${escapeHtml(song.title)}</strong><span>${escapeHtml(song.artist)}</span></div><span class="requester">${escapeHtml(song.requester)}</span><span class="duration">${song.duration}</span><button class="more-button" type="button" aria-label="More options">•••</button>`;
+  item.innerHTML = `<span class="drag-handle">⁙</span><span class="track-art ${artClass}">${escapeHtml(song.artist.slice(0, 2).toUpperCase())}</span><div class="track-info"><strong>${escapeHtml(song.title)}</strong><span>${escapeHtml(song.artist)}</span></div><span class="requester">${escapeHtml(song.requester)}</span><button class="more-button" type="button" aria-label="More options">•••</button>`;
   item.hidden = showMineOnly && song.requester !== currentRequester;
   queue.append(item);
   const remaining = Math.max(0, song.expiresAt - Date.now());

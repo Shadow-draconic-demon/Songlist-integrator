@@ -14,7 +14,6 @@ Then visit `http://localhost:4173`. The Discord webhook is configured in the loc
 
 Queue entries are shared through the Node server, expire 45 minutes after being requested, and are cleared automatically when the server sees a new calendar day. The queue is held in memory, so restarting the server also starts with an empty queue.
 
-Song durations are looked up from MusicBrainz using the submitted title and artist. Requests without a matching recording length are rejected instead of using an estimate.
 
 ## Integration boundary
 

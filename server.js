@@ -8,7 +8,6 @@ const port = Number(process.env.PORT || 4173);
 const queueLifetimeMs = 45 * 60 * 1000;
 const queueLog = [];
 const requestWindows = new Map();
-const durationCache = new Map();
 const requestLimit = 10;
 const requestWindowMs = 10 * 60 * 1000;
 let queueDay = getDayKey();
@@ -35,53 +34,11 @@ function addToQueue(payload) {
     id: crypto.randomUUID(),
     title: payload.title,
     artist: payload.artist || 'Artist not specified',
-    duration: payload.duration,
     requester: payload.requester || '@viewer',
     expiresAt: Date.now() + queueLifetimeMs
   };
   queueLog.push(song);
   return song;
-}
-
-function formatDuration(milliseconds) {
-  const totalSeconds = Math.round(milliseconds / 1000);
-  return `${String(Math.floor(totalSeconds / 60)).padStart(2, '0')}:${String(totalSeconds % 60).padStart(2, '0')}`;
-}
-
-function normalizeText(value) {
-  return value.toLowerCase().replace(/[^a-z0-9]/g, '');
-}
-
-async function lookupDuration(title, artist) {
-  const cacheKey = `${title.toLowerCase()}|${artist.toLowerCase()}`;
-  if (durationCache.has(cacheKey)) return durationCache.get(cacheKey);
-
-  const query = encodeURIComponent(`recording:"${title}" AND artist:"${artist}"`);
-  const result = await fetch(`https://musicbrainz.org/ws/2/recording/?query=${query}&fmt=json&limit=25`, {
-    headers: { 'User-Agent': 'WaveQueue/1.0 (song-request-app)' }
-  });
-  if (!result.ok) throw new Error(`MusicBrainz returned ${result.status}`);
-  const data = await result.json();
-  const normalizedTitle = normalizeText(title);
-  const normalizedArtist = normalizeText(artist);
-  const exactMatches = (data.recordings || []).filter((recording) => {
-    const recordingTitle = normalizeText(recording.title || '');
-    const recordingArtists = normalizeText((recording['artist-credit'] || [])
-      .map((credit) => credit.name || credit.artist?.name || '')
-      .join(' '));
-    return recording.length && recordingTitle === normalizedTitle && recordingArtists.includes(normalizedArtist);
-  });
-  if (!exactMatches.length) return null;
-
-  const durationCounts = new Map();
-  exactMatches.forEach((recording) => {
-    const duration = formatDuration(recording.length);
-    durationCounts.set(duration, (durationCounts.get(duration) || 0) + 1);
-  });
-  const duration = [...durationCounts.entries()]
-    .sort((first, second) => second[1] - first[1])[0][0];
-  durationCache.set(cacheKey, duration);
-  return duration;
 }
 
 function isRateLimited(request) {
@@ -158,8 +115,6 @@ const server = http.createServer((request, response) => {
       try {
         const payload = JSON.parse(body || '{}');
         if (!payload.title) return sendJson(response, 400, { error: 'Song title is required' });
-        payload.duration = await lookupDuration(payload.title, payload.artist || '');
-        if (!payload.duration) return sendJson(response, 422, { error: 'Song duration could not be found. Try the title and artist again.' });
         await postToDiscord(payload);
         const song = addToQueue(payload);
         sendJson(response, 200, { ok: true, song });
